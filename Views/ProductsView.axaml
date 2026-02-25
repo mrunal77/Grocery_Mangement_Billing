@@ -9,10 +9,10 @@
              x:DataType="vm:ProductsViewModel">
 
     <Grid>
-        <Grid RowDefinitions="Auto,*">
+        <Grid RowDefinitions="Auto,*,Auto">
             <!-- Toolbar -->
             <Border Grid.Row="0" Classes="card" Margin="32,32,32,0">
-                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto">
                     <!-- Search -->
                     <Border Grid.Column="0" Background="#F5F5F5" CornerRadius="10" Padding="4" MaxWidth="350" HorizontalAlignment="Left">
                         <Grid ColumnDefinitions="Auto,*">
@@ -21,7 +21,7 @@
                         </Grid>
                     </Border>
                     
-                    <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedCategory}" PlaceholderText="All Categories" MinWidth="180" Margin="16,0">
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" PlaceholderText="All Categories" MinWidth="180" Margin="16,0">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="models:Category">
                                 <TextBlock Text="{Binding Name}"/>
@@ -31,7 +31,14 @@
                     
                     <Button Grid.Column="2" Content="Clear" Command="{Binding ClearFilterCommand}" Classes="secondary" Margin="8,0"/>
                     
-                    <Button Grid.Column="3" Content="+ Add Product" Command="{Binding OpenAddDialogCommand}" Classes="primary"/>
+                    <Button Grid.Column="3" Command="{Binding ImportProductsCommand}" ToolTip.Tip="Import CSV" Margin="8,0" Background="#E3F2FD">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Data="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" Foreground="#1976D2" Width="16" Height="16"/>
+                            <TextBlock Text="Import" Foreground="#1976D2"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Grid.Column="4" Content="+ Add Product" Command="{Binding OpenAddDialogCommand}" Classes="primary"/>
                 </Grid>
             </Border>
 
@@ -71,6 +78,13 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
+
+            <!-- Import Message -->
+            <Border Grid.Row="2" IsVisible="{Binding ShowImportMessage}" Margin="32,0,32,16">
+                <Border Background="#E3F2FD" CornerRadius="8" Padding="16">
+                    <TextBlock Text="{Binding ImportMessage}" TextWrapping="Wrap" Foreground="#1976D2"/>
+                </Border>
+            </Border>
         </Grid>
 
         <!-- Dialog Overlay -->
@@ -87,7 +101,7 @@
                     <StackPanel Spacing="12">
                         <TextBox Text="{Binding EditName}" Watermark="Product Name" Padding="12"/>
                         
-                        <ComboBox SelectedItem="{Binding EditCategory}" PlaceholderText="Category" HorizontalAlignment="Stretch" Padding="8">
+                        <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding EditCategory}" PlaceholderText="Category" HorizontalAlignment="Stretch" Padding="8">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate x:DataType="models:Category">
                                     <TextBlock Text="{Binding Name}"/>

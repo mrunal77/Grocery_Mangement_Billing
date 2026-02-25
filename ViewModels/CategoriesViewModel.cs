@@ -2,14 +2,20 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GroceryStore.Models;
 using GroceryStore.Services;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 
 namespace GroceryStore.ViewModels;
 
 public partial class CategoriesViewModel : ViewModelBase
 {
     private readonly DataService _dataService;
+    private readonly ImportService _importService;
 
     [ObservableProperty]
     private ObservableCollection<CategoryItem> _categories = new();
@@ -32,9 +38,16 @@ public partial class CategoriesViewModel : ViewModelBase
     [ObservableProperty]
     private string _deleteError = string.Empty;
 
+    [ObservableProperty]
+    private string _importMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _showImportMessage;
+
     public CategoriesViewModel(DataService dataService)
     {
         _dataService = dataService;
+        _importService = new ImportService(dataService);
         Refresh();
     }
 
@@ -123,6 +136,63 @@ public partial class CategoriesViewModel : ViewModelBase
 
         _dataService.DeleteCategory(SelectedCategory.Id);
         Refresh();
+    }
+
+    [RelayCommand]
+    private async Task ImportCategories()
+    {
+        try
+        {
+            IStorageProvider? storageProvider = null;
+            
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                storageProvider = desktop.MainWindow?.StorageProvider;
+            }
+
+            if (storageProvider == null)
+            {
+                ImportMessage = "Cannot open file dialog";
+                ShowImportMessage = true;
+                return;
+            }
+
+            var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Import Categories",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } },
+                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+                }
+            });
+
+            if (files.Count > 0)
+            {
+                var file = files[0];
+                var (imported, skipped, errors) = _importService.ImportCategories(file.Path.LocalPath);
+                
+                var message = $"Imported: {imported}, Skipped: {skipped}";
+                if (errors.Count > 0)
+                {
+                    message += $"\nErrors:\n{string.Join("\n", errors.Take(5))}";
+                    if (errors.Count > 5) message += $"\n...and {errors.Count - 5} more";
+                }
+
+                ImportMessage = message;
+                ShowImportMessage = true;
+                Refresh();
+
+                await Task.Delay(5000);
+                ShowImportMessage = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            ImportMessage = $"Error: {ex.Message}";
+            ShowImportMessage = true;
+        }
     }
 }
 

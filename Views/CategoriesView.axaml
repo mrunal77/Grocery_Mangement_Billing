@@ -8,9 +8,9 @@
              x:DataType="vm:CategoriesViewModel">
 
     <Grid>
-        <Grid RowDefinitions="Auto,*">
+        <Grid RowDefinitions="Auto,*,Auto">
             <Border Grid.Row="0" Classes="card" Margin="32,32,32,0">
-                <Grid ColumnDefinitions="*,Auto">
+                <Grid ColumnDefinitions="*,Auto,Auto">
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16">
                         <Border Background="#E8F5E9" CornerRadius="12" Padding="14">
                             <PathIcon Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" Foreground="#2E7D32" Width="26" Height="26"/>
@@ -20,7 +20,15 @@
                             <TextBlock Text="Manage your product categories" FontSize="13" Foreground="#757575"/>
                         </StackPanel>
                     </StackPanel>
-                    <Button Grid.Column="1" Content="+ Add Category" Command="{Binding OpenAddDialogCommand}" Classes="primary" VerticalAlignment="Center"/>
+                    
+                    <Button Grid.Column="1" Command="{Binding ImportCategoriesCommand}" ToolTip.Tip="Import CSV" Margin="0,0,12,0" Background="#E3F2FD" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Data="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" Foreground="#1976D2" Width="16" Height="16"/>
+                            <TextBlock Text="Import" Foreground="#1976D2"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Grid.Column="2" Content="+ Add Category" Command="{Binding OpenAddDialogCommand}" Classes="primary" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
 
@@ -70,6 +78,13 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+            </Border>
+
+            <!-- Import Message -->
+            <Border Grid.Row="2" IsVisible="{Binding ShowImportMessage}" Margin="32,0,32,16">
+                <Border Background="#E3F2FD" CornerRadius="8" Padding="16">
+                    <TextBlock Text="{Binding ImportMessage}" TextWrapping="Wrap" Foreground="#1976D2"/>
+                </Border>
             </Border>
         </Grid>
 
