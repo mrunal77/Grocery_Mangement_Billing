@@ -1,0 +1,127 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GroceryStore.ViewModels"
+             xmlns:models="using:GroceryStore.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="GroceryStore.Views.ProductsView"
+             x:DataType="vm:ProductsViewModel">
+
+    <Grid>
+        <Grid RowDefinitions="Auto,*">
+            <!-- Toolbar -->
+            <Border Grid.Row="0" Classes="card" Margin="32,32,32,0">
+                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+                    <!-- Search -->
+                    <Border Grid.Column="0" Background="#F5F5F5" CornerRadius="10" Padding="4" MaxWidth="350" HorizontalAlignment="Left">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" Foreground="#757575" Width="20" Height="20" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                            <TextBox Grid.Column="1" Text="{Binding SearchText}" Watermark="Search products..." Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    
+                    <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedCategory}" PlaceholderText="All Categories" MinWidth="180" Margin="16,0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:Category">
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    
+                    <Button Grid.Column="2" Content="Clear" Command="{Binding ClearFilterCommand}" Classes="secondary" Margin="8,0"/>
+                    
+                    <Button Grid.Column="3" Content="+ Add Product" Command="{Binding OpenAddDialogCommand}" Classes="primary"/>
+                </Grid>
+            </Border>
+
+            <!-- Products Grid -->
+            <Border Grid.Row="1" Classes="card" Margin="32,16,32,32">
+                <DataGrid ItemsSource="{Binding Products}"
+                          SelectedItem="{Binding SelectedProduct}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0"
+                          Background="White"
+                          Foreground="#212121">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="" Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="#E8F5E9" CornerRadius="8" Padding="8" HorizontalAlignment="Center">
+                                        <PathIcon Data="M20 2H4c-1 0-2 1-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1-1-2-2-2zm-5 12H9v-2h6v2zm5-7H4V4l16-.02V7z" Foreground="#2E7D32" Width="16" Height="16"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Category" Binding="{Binding CategoryName}" Width="140"/>
+                        <DataGridTemplateColumn Header="Price" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Price, StringFormat='${0:F2}'}" FontWeight="SemiBold" Foreground="#2E7D32"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="70"/>
+                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="80"/>
+                        <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="120"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+
+        <!-- Dialog Overlay -->
+        <Border IsVisible="{Binding IsDialogOpen}" Background="#80000000">
+            <Border Background="White" CornerRadius="16" Padding="32" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center" BoxShadow="0 8 32 0 #40000000">
+                <StackPanel Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Border Background="#E8F5E9" CornerRadius="10" Padding="10">
+                            <PathIcon Data="M20 2H4c-1 0-2 1-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1-1-2-2-2zm-5 12H9v-2h6v2zm5-7H4V4l16-.02V7z" Foreground="#2E7D32" Width="22" Height="22"/>
+                        </Border>
+                        <TextBlock Text="{Binding IsEditing, StringFormat='{}{0:Edit Product|Add Product}'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="12">
+                        <TextBox Text="{Binding EditName}" Watermark="Product Name" Padding="12"/>
+                        
+                        <ComboBox SelectedItem="{Binding EditCategory}" PlaceholderText="Category" HorizontalAlignment="Stretch" Padding="8">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:Category">
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                            <TextBox Grid.Column="0" Text="{Binding EditPrice}" Watermark="Price" Margin="0,0,8,0" Padding="12"/>
+                            <TextBox Grid.Column="1" Text="{Binding EditQuantity}" Watermark="Quantity" Margin="8,0,0,0" Padding="12"/>
+                        </Grid>
+                        
+                        <ComboBox SelectedItem="{Binding EditUnit}" PlaceholderText="Unit" HorizontalAlignment="Stretch" Padding="8">
+                            <ComboBoxItem Content="kg"/>
+                            <ComboBoxItem Content="g"/>
+                            <ComboBoxItem Content="L"/>
+                            <ComboBoxItem Content="mL"/>
+                            <ComboBoxItem Content="piece"/>
+                            <ComboBoxItem Content="dozen"/>
+                            <ComboBoxItem Content="pack"/>
+                        </ComboBox>
+                        
+                        <TextBox Text="{Binding EditBarcode}" Watermark="Barcode (optional)" Padding="12"/>
+                        <TextBox Text="{Binding EditDescription}" Watermark="Description (optional)" Height="80" TextWrapping="Wrap" Padding="12"/>
+                    </StackPanel>
+                    
+                    <TextBlock Text="{Binding DialogError}" Foreground="#D32F2F" FontSize="13" IsVisible="{Binding DialogError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12" Margin="0,8,0,0">
+                        <Button Content="Cancel" Command="{Binding CancelDialogCommand}" Classes="secondary" Padding="24,12"/>
+                        <Button Content="Save" Command="{Binding SaveProductCommand}" Classes="primary" Padding="24,12"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

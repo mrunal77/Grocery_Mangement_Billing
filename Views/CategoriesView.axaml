@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GroceryStore.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="GroceryStore.Views.CategoriesView"
+             x:DataType="vm:CategoriesViewModel">
+
+    <Grid>
+        <Grid RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Classes="card" Margin="32,32,32,0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16">
+                        <Border Background="#E8F5E9" CornerRadius="12" Padding="14">
+                            <PathIcon Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" Foreground="#2E7D32" Width="26" Height="26"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Categories" FontSize="22" FontWeight="SemiBold"/>
+                            <TextBlock Text="Manage your product categories" FontSize="13" Foreground="#757575"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="+ Add Category" Command="{Binding OpenAddDialogCommand}" Classes="primary" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" Classes="card" Margin="32,16,32,32">
+                <DataGrid ItemsSource="{Binding Categories}"
+                          SelectedItem="{Binding SelectedCategory}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0"
+                          Background="White"
+                          Foreground="#212121">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="" Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="#E3F2FD" CornerRadius="8" Padding="8" HorizontalAlignment="Center">
+                                        <PathIcon Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" Foreground="#1976D2" Width="16" Height="16"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTemplateColumn Header="Products" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="#E8F5E9" CornerRadius="12" Padding="10,4">
+                                        <TextBlock Text="{Binding ProductCount}" FontWeight="Medium" Foreground="#2E7D32"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Actions" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Command="{Binding $parent[DataGrid].((vm:CategoriesViewModel)DataContext).OpenEditDialogCommand}" ToolTip.Tip="Edit" Padding="8" Background="#E8F5E9">
+                                            <PathIcon Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" Foreground="#2E7D32" Width="16" Height="16"/>
+                                        </Button>
+                                        <Button Command="{Binding $parent[DataGrid].((vm:CategoriesViewModel)DataContext).DeleteCategoryCommand}" ToolTip.Tip="Delete" Padding="8" Background="#FFEBEE">
+                                            <PathIcon Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" Foreground="#D32F2F" Width="16" Height="16"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+
+        <Border IsVisible="{Binding IsDialogOpen}" Background="#80000000">
+            <Border Background="White" CornerRadius="16" Padding="32" MaxWidth="400" HorizontalAlignment="Center" VerticalAlignment="Center" BoxShadow="0 8 32 0 #40000000">
+                <StackPanel Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Border Background="#E8F5E9" CornerRadius="10" Padding="10">
+                            <PathIcon Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" Foreground="#2E7D32" Width="22" Height="22"/>
+                        </Border>
+                        <TextBlock Text="{Binding IsEditing, StringFormat='{}{0:Edit Category|Add Category}'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <TextBox Text="{Binding EditName}" Watermark="Category Name" Padding="12"/>
+                    
+                    <TextBlock Text="{Binding DialogError}" Foreground="#D32F2F" FontSize="13" IsVisible="{Binding DialogError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    <TextBlock Text="{Binding DeleteError}" Foreground="#D32F2F" FontSize="13" IsVisible="{Binding DeleteError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12" Margin="0,8,0,0">
+                        <Button Content="Cancel" Command="{Binding CancelDialogCommand}" Classes="secondary" Padding="24,12"/>
+                        <Button Content="Save" Command="{Binding SaveCategoryCommand}" Classes="primary" Padding="24,12"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

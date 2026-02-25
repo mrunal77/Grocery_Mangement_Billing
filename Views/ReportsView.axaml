@@ -1,0 +1,164 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GroceryStore.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="GroceryStore.Views.ReportsView"
+             x:DataType="vm:ReportsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="32" Spacing="24">
+            <!-- Header with Date Range -->
+            <Border Classes="card">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="24">
+                        <StackPanel>
+                            <TextBlock Text="Start Date" FontSize="12" Foreground="#757575" Margin="0,0,0,8"/>
+                            <DatePicker SelectedDate="{Binding StartDate}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="End Date" FontSize="12" Foreground="#757575" Margin="0,0,0,8"/>
+                            <DatePicker SelectedDate="{Binding EndDate}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Export to CSV" Command="{Binding ExportToCsvCommand}" Classes="primary" VerticalAlignment="Bottom" Padding="24,12"/>
+                </Grid>
+            </Border>
+
+            <!-- Summary Stats -->
+            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto">
+                <Border Grid.Column="0" Classes="card" Margin="0,0,12,0">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0" Background="#E8F5E9" CornerRadius="12" Padding="16" Margin="0,0,16,0">
+                            <PathIcon Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h2v8zm-2-10V5h2v2h-2z" Foreground="#2E7D32" Width="26" Height="26"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Total Sales" FontSize="13" Foreground="#757575"/>
+                            <TextBlock Text="{Binding TotalSales, StringFormat='${0:F2}'}" FontSize="26" FontWeight="Bold" Foreground="#2E7D32"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Grid.Column="1" Classes="card" Margin="12,0">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0" Background="#E3F2FD" CornerRadius="12" Padding="16" Margin="0,0,16,0">
+                            <PathIcon Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" Foreground="#1976D2" Width="26" Height="26"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Transactions" FontSize="13" Foreground="#757575"/>
+                            <TextBlock Text="{Binding TotalTransactions}" FontSize="26" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Grid.Column="2" Classes="card" Margin="12,0,0,0">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0" Background="#FFF3E0" CornerRadius="12" Padding="16" Margin="0,0,16,0">
+                            <PathIcon Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h2v8zm-2-10V5h2v2h-2z" Foreground="#FF6F00" Width="26" Height="26"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Average Transaction" FontSize="13" Foreground="#757575"/>
+                            <TextBlock Text="{Binding AverageTransaction, StringFormat='${0:F2}'}" FontSize="26" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Category Sales -->
+            <Border Classes="card">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,20">
+                        <Border Background="#E8F5E9" CornerRadius="10" Padding="10">
+                            <PathIcon Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" Foreground="#2E7D32" Width="20" Height="20"/>
+                        </Border>
+                        <TextBlock Text="Sales by Category" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding CategorySales}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                                        <Border Background="#F5F5F5" CornerRadius="6" Padding="10,6">
+                                            <PathIcon Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" Foreground="#757575" Width="14" Height="14"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding CategoryName}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding Amount, StringFormat='${0:F2}'}" FontWeight="SemiBold" Foreground="#2E7D32"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Top Products -->
+            <Border Classes="card">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,20">
+                        <Border Background="#FFF3E0" CornerRadius="10" Padding="10">
+                            <PathIcon Data="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" Foreground="#FF6F00" Width="20" Height="20"/>
+                        </Border>
+                        <TextBlock Text="Top Selling Products" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding TopProducts}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                                        <Border Background="#FFF3E0" CornerRadius="6" Padding="10,6">
+                                            <PathIcon Data="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" Foreground="#FF6F00" Width="14" Height="14"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding ProductName}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding QuantitySold, StringFormat='{}{0} sold'}" FontWeight="Medium" Foreground="#FF6F00"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Transaction List -->
+            <Border Classes="card">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,20">
+                        <Border Background="#E3F2FD" CornerRadius="10" Padding="10">
+                            <PathIcon Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" Foreground="#1976D2" Width="20" Height="20"/>
+                        </Border>
+                        <TextBlock Text="Transactions" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <DataGrid ItemsSource="{Binding Transactions}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              GridLinesVisibility="Horizontal"
+                              BorderThickness="0"
+                              Background="White"
+                              Foreground="#212121">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="" Width="50">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#E8F5E9" CornerRadius="6" Padding="8" HorizontalAlignment="Center">
+                                            <PathIcon Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h2v8zm-2-10V5h2v2h-2z" Foreground="#2E7D32" Width="16" Height="16"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='{}{0:MMM dd, yyyy HH:mm}'}" Width="*"/>
+                            <DataGridTextColumn Header="Items" Binding="{Binding Items.Count}" Width="80"/>
+                            <DataGridTextColumn Header="SubTotal" Binding="{Binding SubTotal, StringFormat='${0:F2}'}" Width="100"/>
+                            <DataGridTextColumn Header="Tax" Binding="{Binding TaxAmount, StringFormat='${0:F2}'}" Width="80"/>
+                            <DataGridTemplateColumn Header="Total" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding TotalAmount, StringFormat='${0:F2}'}" FontWeight="SemiBold" Foreground="#2E7D32"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
